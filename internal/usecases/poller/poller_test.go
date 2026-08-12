@@ -2,7 +2,6 @@ package poller_test
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"testing"
 	"time"
@@ -65,7 +64,7 @@ func TestDatabasePoller_NoTasksThenSuccess(t *testing.T) {
 
 	firstCall := mockRepo.EXPECT().
 		AcquireTask(gomock.Any(), "default", cfg.LockDuration, gomock.Any()).
-		Return(nil, sql.ErrNoRows)
+		Return(nil, nil)
 	secondCall := mockRepo.EXPECT().
 		AcquireTask(gomock.Any(), "default", cfg.LockDuration, gomock.Any()).
 		Return(expectedTask, nil).
@@ -98,7 +97,7 @@ func TestDatabasePoller_ContextTimeout(t *testing.T) {
 
 	mockRepo.EXPECT().
 		AcquireTask(gomock.Any(), "default", cfg.LockDuration, gomock.Any()).
-		Return(nil, sql.ErrNoRows).
+		Return(nil, nil).
 		AnyTimes()
 
 	p := poller.NewDatabasePoller(mockRepo, cfg)
