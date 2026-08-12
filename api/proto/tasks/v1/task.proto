@@ -1,0 +1,121 @@
+﻿syntax = "proto3";
+
+package tasks.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "buf/validate/validate.proto";
+
+option go_package = "github.com/korjeek/scheduler/pkg/pb;pb";
+
+enum TaskStatus {
+  TASK_STATUS_UNSPECIFIED = 0;
+  TASK_STATUS_PENDING = 1;
+  TASK_STATUS_RUNNING = 2;
+  TASK_STATUS_SUCCESS = 3;
+  TASK_STATUS_FAILED = 4;
+}
+
+service TaskService {
+  rpc CreateTask (CreateTaskRequest) returns (CreateTaskResponse) {
+    option (google.api.http) = {
+      post: "/api/tasks"
+      body: "*"
+    };
+  }
+
+  rpc GetTask (GetTaskRequest) returns (GetTaskResponse) {
+    option (google.api.http) = {
+      get: "/api/tasks/{id}"
+    };
+  }
+
+  rpc ListTasks (ListTasksRequest) returns (ListTasksResponse) {
+    option (google.api.http) = {
+      get: "/api/tasks"
+    };
+  }
+
+  rpc PollTask (PollTaskRequest) returns (PollTaskResponse);
+
+  rpc CompleteTask (CompleteTaskRequest) returns (CompleteTaskResponse);
+
+  rpc FailTask (FailTaskRequest) returns (FailTaskResponse);
+
+  rpc Heartbeat (HeartbeatRequest) returns (HeartbeatResponse);
+}
+
+message CreateTaskRequest {
+  string name = 1 [(buf.validate.field).string.min_len = 3, (buf.validate.field).string.max_len = 255];
+  int32 max_retries = 2 [(buf.validate.field).int32.gte = 0, (buf.validate.field).int32.lte = 10];
+  bytes payload = 3 [(buf.validate.field).bytes.min_len = 1];
+  optional string cron = 4;
+  google.protobuf.Timestamp run_at = 5;
+  string queue_name = 6 [(buf.validate.field).string.min_len = 1];
+}
+
+message CreateTaskResponse {
+  string id = 1;
+  string name = 2;
+  google.protobuf.Timestamp next_run_at = 3;
+  TaskStatus status = 4;
+}
+
+message GetTaskRequest {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message GetTaskResponse {
+  string id = 1;
+  string name = 2;
+  string cron = 3;
+  TaskStatus status = 4;
+  int32 max_retries = 5;
+  google.protobuf.Timestamp next_run_at = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message ListTasksRequest {
+  int32 limit = 1 [(buf.validate.field).int32.gte = 1, (buf.validate.field).int32.lte = 100];
+  int32 offset = 2 [(buf.validate.field).int32.gte = 0];
+}
+
+message ListTasksResponse {
+  repeated GetTaskResponse tasks = 1;
+}
+
+message PollTaskRequest {
+  string queue_name = 1 [(buf.validate.field).string.min_len = 1];
+  string worker_id = 2 [(buf.validate.field).string.uuid = true];
+}
+
+message PollTaskResponse {
+  string id = 1;
+  string queue_name = 2;
+  bytes payload = 3;
+  int32 attempt = 4;
+  int32 max_retries = 5;
+}
+
+message CompleteTaskRequest {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string worker_id = 2 [(buf.validate.field).string.uuid = true];
+}
+
+message CompleteTaskResponse {}
+
+message FailTaskRequest {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string worker_id = 2 [(buf.validate.field).string.uuid = true];
+  string error_message = 3;
+}
+
+message FailTaskResponse {}
+
+message HeartbeatRequest {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string worker_id = 2 [(buf.validate.field).string.uuid = true];
+  int32 extend_seconds = 3;
+}
+
+message HeartbeatResponse {}

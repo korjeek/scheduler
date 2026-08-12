@@ -1,0 +1,8 @@
+﻿version: v2
+modules:
+  - name: buf.build/korjeek/scheduler
+    path: api/proto
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/protocolbuffers/wellknowntypes
+  - buf.build/bufbuild/protovalidate

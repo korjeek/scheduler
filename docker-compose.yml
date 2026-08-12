@@ -1,0 +1,61 @@
+﻿services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-scheduler}
+      POSTGRES_USER: ${POSTGRES_USER:-scheduler}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-scheduler}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-scheduler} -d ${POSTGRES_DB:-scheduler}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - scheduler-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_CONNECTION_STRING: "postgres://${POSTGRES_USER:-scheduler}:${POSTGRES_PASSWORD:-scheduler}@db:5432/${POSTGRES_DB:-scheduler}?sslmode=disable"
+      SERVER_HTTP_ADDRESS: "0.0.0.0:8080"
+      SERVER_GRPC_ADDRESS: "0.0.0.0:50051"
+      HEALTH_ADDRESS: "0.0.0.0:9090"
+      SERVER_DEV_MODE: "false"
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - scheduler-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+volumes:
+  pg_data:
+
+networks:
+  scheduler-net:
+    driver: bridge
