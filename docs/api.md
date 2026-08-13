@@ -29,7 +29,7 @@ tasks.v1.TaskService
 
 Workers primarily use `PollTask`, `CompleteTask`, `FailTask`, and `Heartbeat`.
 
-See [Workers](workers.md) for the worker lifecycle and examples.
+See [Workers](docs/workers.md) for the worker lifecycle and examples.
 
 ### Client Generation
 
