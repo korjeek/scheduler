@@ -2,6 +2,7 @@ package poller
 
 import (
 	"context"
+	"errors"
 	"scheduler/internal/infrastructure/config"
 	"scheduler/internal/usecases/task"
 	"time"
@@ -40,7 +41,11 @@ func (p *DatabasePoller) Poll(ctx context.Context, queueName string, workerID uu
 	for {
 		select {
 		case <-ctx.Done():
-			return nil, ctx.Err()
+			err := ctx.Err()
+			if errors.Is(err, context.DeadlineExceeded) {
+				return nil, nil
+			}
+			return nil, err
 		default:
 		}
 
