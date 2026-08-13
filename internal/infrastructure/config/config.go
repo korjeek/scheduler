@@ -66,6 +66,7 @@ func Load() (*AppConfig, error) {
 
 func setDefaults(v *viper.Viper) {
 	// database
+	v.SetDefault("database.connection_string", "")
 	v.SetDefault("database.min_cons", 1)
 	v.SetDefault("database.max_cons", 20)
 	v.SetDefault("database.max_connection_lifetime", "30m")
@@ -80,16 +81,16 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("recoverer.shutdown_timeout", "10s")
 
 	// servers
-	v.SetDefault("servers.http_server", "0.0.0.0:8080")
+	v.SetDefault("server.http_server", "0.0.0.0:8080")
 	v.SetDefault("server.grpc_address", "0.0.0.0:50051")
-	v.SetDefault("servers.read_timeout", "10s")
-	v.SetDefault("servers.read_header_timeout", "5s")
-	v.SetDefault("servers.write_timeout", "10s")
-	v.SetDefault("servers.idle_timeout", "120s")
-	v.SetDefault("servers.shutdown_timeout", "30s")
-	v.SetDefault("servers.max_header_bytes", 1048576)
-	v.SetDefault("servers.rate_limit.requests_per_second", 100.0)
-	v.SetDefault("servers.rate_limit.burst", 200)
+	v.SetDefault("server.read_timeout", "10s")
+	v.SetDefault("server.read_header_timeout", "5s")
+	v.SetDefault("server.write_timeout", "10s")
+	v.SetDefault("server.idle_timeout", "120s")
+	v.SetDefault("server.shutdown_timeout", "30s")
+	v.SetDefault("server.max_header_bytes", 1048576)
+	v.SetDefault("server.rate_limit.requests_per_second", 100.0)
+	v.SetDefault("server.rate_limit.burst", 200)
 
 	// clients
 	v.SetDefault("clients.http.timeout", "30s")
