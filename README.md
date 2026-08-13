@@ -4,6 +4,7 @@
 [![Coverage](https://codecov.io/gh/korjeek/scheduler/graph/badge.svg)](https://codecov.io/gh/korjeek/scheduler)
 [![Go Version](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go\&logoColor=white)](https://go.dev/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791?logo=postgresql\&logoColor=white)](https://www.postgresql.org/)
+[![Latest Release](https://img.shields.io/github/v/release/korjeek/scheduler)](https://github.com/korjeek/scheduler/releases)
 
 **A distributed task scheduler for reliable background jobs.**
 
