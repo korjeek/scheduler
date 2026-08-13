@@ -125,7 +125,7 @@ func setDefaults(v *viper.Viper) {
 }
 
 func bindEnvRecursive(v *viper.Viper, prefix string, t reflect.Type) {
-	if t.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
 	if t.Kind() != reflect.Struct {
