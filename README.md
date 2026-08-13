@@ -1,6 +1,7 @@
 # Scheduler
 
 [![CI](https://github.com/korjeek/scheduler/actions/workflows/workflow.yml/badge.svg)](https://github.com/korjeek/scheduler/actions)
+[![Coverage](https://codecov.io/gh/korjeek/scheduler/graph/badge.svg)](https://codecov.io/gh/korjeek/scheduler)
 [![Go Version](https://img.shields.io/badge/Go-1.26-00ADD8?logo=go\&logoColor=white)](https://go.dev/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791?logo=postgresql\&logoColor=white)](https://www.postgresql.org/)
 
@@ -9,6 +10,8 @@
 Scheduler is a standalone service for creating, scheduling, dispatching, retrying, and recovering background tasks.
 
 Applications create tasks. Workers execute them. Scheduler coordinates the work between them.
+
+[Getting Started](#quick-start) · [API](api.md) · [Workers](workers.md) · [Configuration](#configuration)
 
 ## Architecture
 
@@ -43,6 +46,8 @@ Workers communicate with Scheduler over gRPC and can be written in any language 
 
 The easiest way to run Scheduler locally is Docker Compose.
 
+### `docker-compose.yml`
+
 ```yaml
 services:
   db:
@@ -58,6 +63,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - scheduler-net
 
   scheduler:
     image: ghcr.io/korjeek/scheduler:main
@@ -74,10 +81,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - scheduler-net
 
 volumes:
   pg_data:
+
+networks:
+  scheduler-net:
+    driver: bridge
 ```
+
+Start the service:
 
 ```bash
 docker compose up -d
@@ -87,14 +102,17 @@ docker compose up -d
 | --------- | ------------------------------- |
 | HTTP API  | `http://localhost:8080`         |
 | gRPC API  | `localhost:50051`               |
-| Health    | `http://localhost:9090/healthz` |
+| Liveness  | `http://localhost:9090/healthz` |
 | Readiness | `http://localhost:9090/readyz`  |
 
-`SERVER_DEV_MODE=true` enables Swagger/OpenAPI and gRPC reflection for local development.
+> [!TIP]
+> `SERVER_DEV_MODE=true` enables Swagger/OpenAPI and gRPC reflection for local development. Disable it in production.
 
 ## Creating Tasks
 
-### Immediate
+Tasks can be created through the HTTP API or gRPC.
+
+### Immediate Task
 
 ```bash
 curl -X POST http://localhost:8080/api/tasks \
@@ -107,9 +125,11 @@ curl -X POST http://localhost:8080/api/tasks \
   }'
 ```
 
-### Delayed
+The payload is opaque to Scheduler and is interpreted by the worker.
 
-Set `run_at` to schedule a task for a specific time:
+### Delayed Task
+
+Set `run_at` to an RFC 3339 timestamp:
 
 ```json
 {
@@ -119,9 +139,9 @@ Set `run_at` to schedule a task for a specific time:
 }
 ```
 
-### Recurring
+### Recurring Task
 
-Set `cron` to run a task on a schedule:
+Set `cron` to a cron expression:
 
 ```json
 {
@@ -131,13 +151,16 @@ Set `cron` to run a task on a schedule:
 }
 ```
 
-The task payload is opaque to Scheduler and is interpreted by the worker.
+See [API Reference](api.md) for the full task model and request formats.
 
-## Worker Integration
+## Workers
 
 Workers consume tasks over gRPC and report completion, failure, or heartbeats.
 
-See [Workers](workers.md) for the worker protocol and examples.
+See [Workers](workers.md) for the worker lifecycle, protocol, and examples.
+
+> [!NOTE]
+> Workers are independent services and can be written in any language with gRPC support.
 
 ## API
 
@@ -149,15 +172,28 @@ See [API Reference](api.md) for endpoints, gRPC methods, and request/response fo
 
 Configuration can be provided through `config.yaml` or environment variables.
 
-See [`config/config.example.yaml`](config/config.example.yaml) for the available options.
+Environment variables override values loaded from YAML.
+
+See [`config/config.example.yaml`](config/config.example.yaml) for the complete list of options.
+
+## Health Checks
+
+```text
+GET /healthz
+GET /readyz
+```
+
+These endpoints can be used by containers, load balancers, and orchestration systems.
 
 ## Development
 
-Requirements:
+### Requirements
 
 * Go 1.26+
 * Docker
-* PostgreSQL 17+
+* PostgreSQL 17+ when running PostgreSQL outside Docker
+
+### Tests
 
 Run unit tests:
 
@@ -171,7 +207,7 @@ Run integration tests:
 go test ./... -tags=integration
 ```
 
-Run the smoke test:
+Run the end-to-end smoke test:
 
 ```bash
 ./scripts/smoke-test.sh
@@ -179,7 +215,7 @@ Run the smoke test:
 
 ## License
 
-[MIT License](LICENSE)
+This project is licensed under the [MIT License](LICENSE).
 
 ---
 
