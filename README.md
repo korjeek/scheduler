@@ -174,7 +174,7 @@ Configuration can be provided through `config.yaml` or environment variables.
 
 Environment variables override values loaded from YAML.
 
-See [`config/config.example.yaml`](config/config.yaml) for the complete list of options.
+See [`config/config.yaml`](config/config.yaml) for the complete list of options.
 
 ## Health Checks
 
