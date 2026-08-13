@@ -1,5 +1,8 @@
 ﻿ignore:
+  - "cmd/scheduler/**"
+  - "internal/infrastructure/cron/**"
+  - "internal/infrastructure/logger/**"
+  - "internal/infrastructure/health/**"
   - "**/mocks/**"
   - "**/*.pb.go"
   - "**/*.pb.gw.go"
-  - "**/*_test.go"

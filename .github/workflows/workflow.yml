@@ -59,7 +59,7 @@ jobs:
           cache: true
 
       - name: Run integration tests
-        run: go test -v ./internal/infrastructure/repository/postgres/... -tags=integration -coverprofile=integration-coverage.out
+        run: go test -v ./... -tags=integration -coverprofile=integration-coverage.out
         env:
           DOCKER_HOST: unix:///var/run/docker.sock
           TESTCONTAINERS_RYUK_DISABLED: "false"
