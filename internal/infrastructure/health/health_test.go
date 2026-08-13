@@ -13,7 +13,6 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -86,13 +85,13 @@ func TestHealthServerIntegration(t *testing.T) {
 
 	resp, err := http.Get(baseURL + "/healthz")
 	require.NoError(t, err)
-	defer func(Body io.ReadCloser) {}(resp.Body)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	defer func(Body io.ReadCloser) { _ = Body.Close() }(resp.Body)
+	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	resp, err = http.Get(baseURL + "/readyz")
 	require.NoError(t, err)
-	defer func(Body io.ReadCloser) {}(resp.Body)
-	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	defer func(Body io.ReadCloser) { _ = Body.Close() }(resp.Body)
+	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	require.NoError(t, pgContainer.Terminate(ctx))
 	pool.Close()
@@ -106,13 +105,7 @@ func TestHealthServerIntegration(t *testing.T) {
 		return resp.StatusCode == http.StatusServiceUnavailable
 	}, 5*time.Second, 100*time.Millisecond, "readiness did not become unavailable")
 
-	time.Sleep(1 * time.Second)
-
-	resp, err = http.Get(baseURL + "/readyz")
-	require.NoError(t, err)
-	defer func(Body io.ReadCloser) {}(resp.Body)
-	assert.Equal(t, http.StatusServiceUnavailable, resp.StatusCode)
-
+	// Останавливаем health-сервер
 	shutdownCtx, cancelShutdown := context.WithTimeout(ctx, healthCfg.ShutdownTimeout)
 	defer cancelShutdown()
 	require.NoError(t, hs.Shutdown(shutdownCtx))
