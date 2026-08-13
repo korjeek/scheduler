@@ -95,6 +95,16 @@ func TestHealthServerIntegration(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	require.NoError(t, pgContainer.Terminate(ctx))
+	pool.Close()
+
+	require.Eventually(t, func() bool {
+		resp, err := http.Get(baseURL + "/readyz")
+		if err != nil {
+			return false
+		}
+		defer func(Body io.ReadCloser) { _ = Body.Close() }(resp.Body)
+		return resp.StatusCode == http.StatusServiceUnavailable
+	}, 5*time.Second, 100*time.Millisecond, "readiness did not become unavailable")
 
 	time.Sleep(1 * time.Second)
 
