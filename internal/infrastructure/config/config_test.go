@@ -64,7 +64,7 @@ database:
 }
 
 func TestLoad_WithEnvOverride(t *testing.T) {
-	t.Setenv("database_connection_string", "postgres://env:env@localhost:5432/envdb")
+	t.Setenv("DATABASE_CONNECTION_STRING", "postgres://env:env@localhost:5432/envdb")
 
 	cfg, err := config.Load()
 	require.NoError(t, err)
