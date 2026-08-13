@@ -11,7 +11,7 @@ Scheduler is a standalone service for creating, scheduling, dispatching, retryin
 
 Applications create tasks. Workers execute them. Scheduler coordinates the work between them.
 
-[Getting Started](#quick-start) · [API](api.md) · [Workers](workers.md) · [Configuration](#configuration)
+[Getting Started](#quick-start) · [API](docs/api.md) · [Workers](docs/workers.md) · [Configuration](#configuration)
 
 ## Architecture
 
@@ -151,13 +151,13 @@ Set `cron` to a cron expression:
 }
 ```
 
-See [API Reference](api.md) for the full task model and request formats.
+See [API Reference](docs/api.md) for the full task model and request formats.
 
 ## Workers
 
 Workers consume tasks over gRPC and report completion, failure, or heartbeats.
 
-See [Workers](workers.md) for the worker lifecycle, protocol, and examples.
+See [Workers](docs/workers.md) for the worker lifecycle, protocol, and examples.
 
 > [!NOTE]
 > Workers are independent services and can be written in any language with gRPC support.
@@ -166,7 +166,7 @@ See [Workers](workers.md) for the worker lifecycle, protocol, and examples.
 
 Scheduler exposes both HTTP/REST and gRPC interfaces.
 
-See [API Reference](api.md) for endpoints, gRPC methods, and request/response formats.
+See [API Reference](docs/api.md) for endpoints, gRPC methods, and request/response formats.
 
 ## Configuration
 
@@ -174,7 +174,7 @@ Configuration can be provided through `config.yaml` or environment variables.
 
 Environment variables override values loaded from YAML.
 
-See [`config/config.example.yaml`](config/config.example.yaml) for the complete list of options.
+See [`config/config.yaml`](config/config.yaml) for the complete list of options.
 
 ## Health Checks
 

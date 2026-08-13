@@ -36,8 +36,6 @@ See [API Reference](api.md) for the full gRPC contract.
 
 ## Python Example
 
-A complete runnable example is available in [`examples/python-worker/worker.py`](../examples/python-worker/worker.py).
-
 The following shows the core worker loop:
 
 ```python
