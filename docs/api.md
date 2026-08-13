@@ -5,7 +5,7 @@ Scheduler exposes two APIs:
 * **gRPC** — primary API for workers and programmatic integrations.
 * **HTTP/REST** — management and simple integrations.
 
-The gRPC contract is defined by [`api/proto/tasks/v1/task.proto`](api/proto/tasks/v1/task.proto).
+The gRPC contract is defined by [`api/proto/tasks/v1/task.proto`](../api/proto/tasks/v1/task.proto).
 
 This file is the source of truth for the gRPC service, messages, enums, and wire contract.
 
