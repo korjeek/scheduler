@@ -81,7 +81,7 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("recoverer.shutdown_timeout", "10s")
 
 	// servers
-	v.SetDefault("server.http_server", "0.0.0.0:8080")
+	v.SetDefault("server.http_address", "0.0.0.0:8080")
 	v.SetDefault("server.grpc_address", "0.0.0.0:50051")
 	v.SetDefault("server.read_timeout", "10s")
 	v.SetDefault("server.read_header_timeout", "5s")
@@ -89,8 +89,8 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("server.idle_timeout", "120s")
 	v.SetDefault("server.shutdown_timeout", "30s")
 	v.SetDefault("server.max_header_bytes", 1048576)
-	v.SetDefault("server.rate_limit.requests_per_second", 100.0)
-	v.SetDefault("server.rate_limit.burst", 200)
+	v.SetDefault("server.rate_limiter.requests_per_second", 100.0)
+	v.SetDefault("server.rate_limiter.burst", 200)
 
 	// clients
 	v.SetDefault("clients.http.timeout", "30s")
