@@ -25,10 +25,6 @@ go.work.sum
 .env.*
 !.env.example
 
-# Локальные конфиги, которые не должны попадать в репозиторий
-config.yaml
-config.local.yaml
-
 # --- IDE (GoLand, VS Code и др.) ---
 .idea/
 .vscode/

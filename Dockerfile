@@ -14,7 +14,6 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 RUN apk add --no-cache ca-certificates tzdata
 WORKDIR /app
 COPY --from=builder /out/scheduler .
-COPY ./config/config.yaml ./config.yaml
 RUN chown -R appuser:appgroup /app
 USER appuser
 EXPOSE 8080 50051 9090

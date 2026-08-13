@@ -1,0 +1,64 @@
+﻿# ==============================================
+# Example configuration for Scheduler
+# ==============================================
+# This file contains safe defaults for all components.
+# Please read the comments carefully before changing values.
+# Some parameters are interrelated (see table in README).
+# ==============================================
+
+# --- Database (PostgreSQL) ---
+database:
+  connection_string: "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+  min_cons: 1                     # Minimum number of connections in the pool
+  max_cons: 20                    # Maximum number of connections in the pool
+  max_connection_lifetime: "30m"  # Maximum lifetime of a connection
+  max_connection_idle_time: "15m" # Maximum idle time before closing
+  health_check_period: "1m"       # How often the pool checks connection health
+  connect_timeout: "30s"          # Timeout for initial connection
+  migration_timeout: "30s"        # Timeout for database migrations at startup
+
+# --- Server (gRPC + HTTP gateway) ---
+server:
+  dev_mode: true                  # Enables Swagger UI and gRPC reflection (disable in production!)
+  http_address: "0.0.0.0:8080"    # HTTP/gRPC-gateway listen address
+  grpc_address: "0.0.0.0:50051"   # gRPC listen address
+  read_timeout: "10s"
+  read_header_timeout: "5s"
+  write_timeout: "10s"
+  idle_timeout: "120s"
+  shutdown_timeout: "30s"         # Graceful shutdown deadline
+  max_header_bytes: 1048576       # Max HTTP header size (1 MB)
+
+  rate_limiter:
+    requests_per_second: 100      # Sustained request rate
+    burst: 200                    # Maximum burst size
+
+# --- Poller (long-poll, task acquisition) ---
+poller:
+  poll_interval: "1s"             # Delay between DB checks when no tasks available
+  lock_duration: "30s"            # Initial lock duration (heartbeats must extend before expiry)
+
+# --- Recoverer (detects and reschedules orphaned tasks) ---
+recoverer:
+  interval: "60s"                 # MUST be greater than poller.lock_duration (recommended 2x)
+  query_timeout: "5s"             # Timeout for recovery SQL query
+  shutdown_timeout: "10s"         # Graceful shutdown deadline
+
+# --- Cleaner (removes completed tasks) ---
+cleaner:
+  enabled: true
+  interval: "1h"                  # How often to run cleanup
+  retention_period: "720h"        # Keep completed tasks for 30 days
+  batch_size: 1000                # Rows to delete per batch
+  batch_delay: "100ms"            # Delay between batches (set 0 if DB can handle)
+  shutdown_timeout: "10s"         # Graceful shutdown deadline
+  query_timeout: "5s"             # Timeout for each delete batch
+
+# --- Health-check server ---
+health:
+  address: "0.0.0.0:9090"         # Health endpoint listen address
+  read_timeout: "2s"
+  write_timeout: "2s"
+  shutdown_timeout: "5s"
+  component_name: "scheduler"     # Used in health payload
+  component_version: "1.0.0"      # Used in health payload
