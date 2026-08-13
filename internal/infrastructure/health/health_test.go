@@ -75,6 +75,15 @@ func TestHealthServerIntegration(t *testing.T) {
 
 	baseURL := fmt.Sprintf("http://%s", healthCfg.Address)
 
+	require.Eventually(t, func() bool {
+		conn, err := net.DialTimeout("tcp", healthCfg.Address, 100*time.Millisecond)
+		if err == nil {
+			_ = conn.Close()
+			return true
+		}
+		return false
+	}, 2*time.Second, 50*time.Millisecond, "health server did not start in time")
+
 	resp, err := http.Get(baseURL + "/healthz")
 	require.NoError(t, err)
 	defer func(Body io.ReadCloser) {}(resp.Body)
