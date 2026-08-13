@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"reflect"
 	"strings"
 
 	"github.com/spf13/viper"
@@ -47,6 +48,7 @@ func Load() (*AppConfig, error) {
 
 	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 	v.AutomaticEnv()
+	bindEnvRecursive(v, "", reflect.TypeOf(AppConfig{}))
 
 	setDefaults(v)
 
@@ -120,4 +122,28 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("health.shutdown_timeout", "5s")
 	v.SetDefault("health.component_name", "scheduler")
 	v.SetDefault("health.component_version", "1.0.0")
+}
+
+func bindEnvRecursive(v *viper.Viper, prefix string, t reflect.Type) {
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	if t.Kind() != reflect.Struct {
+		return
+	}
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		tag := field.Tag.Get("mapstructure")
+		if tag == "" {
+			continue
+		}
+		key := strings.Split(tag, ",")[0]
+		path := prefix + key
+		if field.Type.Kind() == reflect.Struct {
+			bindEnvRecursive(v, path+".", field.Type)
+		} else {
+			envName := strings.ToUpper(strings.ReplaceAll(path, ".", "_"))
+			_ = v.BindEnv(path, envName)
+		}
+	}
 }
