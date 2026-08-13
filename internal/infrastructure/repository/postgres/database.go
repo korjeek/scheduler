@@ -33,6 +33,7 @@ var Module = fx.Module("database",
 		func(repo *TaskRepository) poller.Repository { return repo },
 		func(repo *TaskRepository) recoverer.Repository { return repo },
 		func(repo *TaskRepository) cleaner.Repository { return repo },
+		func(db *Database) *pgxpool.Pool { return db.pool },
 	),
 	fx.Invoke(func(db *Database, lc fx.Lifecycle, log *slog.Logger) {
 		lc.Append(fx.Hook{
