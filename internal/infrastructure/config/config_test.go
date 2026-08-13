@@ -1,3 +1,5 @@
+//go:build unit
+
 package config_test
 
 import (
@@ -38,26 +40,6 @@ func TestLoad_Defaults(t *testing.T) {
 
 	// Health
 	assert.Equal(t, ":9090", cfg.Health.Address)
-}
-
-func TestLoad_WithDefaultsOnly(t *testing.T) {
-	t.Setenv("CONFIG_PATH", filepath.Join(t.TempDir(), "no-config.yaml"))
-
-	cfg, err := config.Load()
-	require.NoError(t, err)
-	require.NotNil(t, cfg)
-
-	assert.EqualValues(t, 1, cfg.Database.MinCons)
-	assert.EqualValues(t, 20, cfg.Database.MaxCons)
-	assert.Equal(t, "0.0.0.0:8080", cfg.Server.HttpAddr)
-	assert.Equal(t, "0.0.0.0:50051", cfg.Server.GrpcAddr)
-	assert.Equal(t, 100.0, cfg.Server.RateLimiter.RequestsPerSecond)
-	assert.Equal(t, 200, cfg.Server.RateLimiter.Burst)
-	assert.Equal(t, time.Second, cfg.Poller.PollInterval)
-	assert.Equal(t, 30*time.Second, cfg.Poller.LockDuration)
-	assert.True(t, cfg.Cleaner.Enabled)
-	assert.Equal(t, ":9090", cfg.Health.Address)
-	assert.Equal(t, "scheduler", cfg.Health.ComponentName)
 }
 
 func TestLoad_WithYAMLOverride(t *testing.T) {
