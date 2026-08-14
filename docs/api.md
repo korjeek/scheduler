@@ -47,9 +47,6 @@ python -m grpc_tools.protoc \
 
 This generates the Python message and gRPC client code required to communicate with Scheduler.
 
-> [!NOTE]
-> Generated client files do not need to be copied from the Scheduler repository. Generate them from the version of `task.proto` used by your integration.
-
 ## HTTP / REST
 
 The HTTP API provides the management operations and uses JSON.
