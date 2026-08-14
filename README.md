@@ -208,12 +208,6 @@ Run integration tests:
 go test ./... -tags=integration
 ```
 
-Run the end-to-end smoke test:
-
-```bash
-./scripts/smoke-test.sh
-```
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
