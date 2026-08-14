@@ -208,10 +208,4 @@ Run integration tests:
 go test ./... -tags=integration
 ```
 
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
 **Maintained by [korjeek](https://github.com/korjeek).**
